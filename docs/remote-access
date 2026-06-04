@@ -1,0 +1,101 @@
+Remote Access Infrastructure
+Overview
+Remote access is delivered via a VPN-first architecture designed to securely connect authorized users to internal services without exposing administrative interfaces to the public internet. This strategy significantly reduces the attack surface while maintaining convenient access to infrastructure resources, hosted applications, and management tools.
+
+The design supports administration, service management, media consumption, and application hosting, ensuring that sensitive management portals remain isolated from direct external access.
+
+Design Objectives
+Secure External Access: Enable safe connectivity to internal services from any location.
+Minimize Exposure: Keep management interfaces private and accessible only via secure tunnels.
+Encrypted Traffic: Ensure all data in transit is protected with modern encryption standards.
+Streamlined Administration: Simplify the management of self-hosted infrastructure for remote operators.
+Controlled Access: Grant permissions strictly to authorized users.
+Consistent Experience: Provide a uniform user experience whether on-site or remote.
+Architecture
+
+[ Remote User ]
+     |
+[ Internet ]
+     |
+[ WireGuard VPN Tunnel ]
+     |
+[ Internal Network ]
+     |
++----------------------------------+
+|  DNS  |  Storage  |  Media  |  Auth  |
++----------------------------------+
+Remote Access Strategy
+Administrative services and core infrastructure components are kept private by default. Rather than exposing management portals directly to the internet, users establish a secure WireGuard VPN tunnel to access internal resources.
+
+Protected Services Include:
+
+Proxmox VE Management Interface
+DNS Administration (Pi-hole/Unbound)
+Infrastructure Monitoring Dashboards
+Storage Management Interfaces
+Authentication Platforms
+Internal Development Applications
+This approach drastically reduces the number of publicly exposed services, mitigating the risk of unauthorized access and brute-force attacks.
+
+WireGuard Implementation
+WireGuard was selected as the primary remote access solution due to its simplicity, high performance, and robust encryption standards.
+
+Key Advantages:
+
+Fast Handshake: Rapid connection establishment with minimal latency.
+Efficiency: Low CPU and memory footprint compared to legacy solutions.
+Modern Crypto: Built on state-of-the-art cryptographic primitives.
+Cross-Platform: Native support across Linux, Windows, macOS, iOS, and Android.
+Simplicity: Minimal configuration complexity compared to OpenVPN or IPsec.
+Reliability: Stable connectivity even on fluctuating network conditions.
+Public Service Access
+While management tools remain behind the VPN, select user-facing applications are made accessible via the Traefik reverse proxy.
+
+Examples:
+
+media.example.com (Jellyfin)
+cloud.example.com (Nextcloud)
+services.example.com (Custom Apps)
+These services are routed through Traefik with enforced HTTPS encryption and optional authentication controls, ensuring a secure public-facing layer.
+
+Access Flows
+Secure Administrative Access
+
+[ Remote User ]
+     |
+[ WireGuard VPN ]
+     |
+[ Internal DNS Resolution ]
+     |
+[ Internal Service Access ]
+Public Application Access
+
+[ Remote User ]
+     |
+[ HTTPS ]
+     |
+[ Traefik Reverse Proxy ]
+     |
+[ Hosted Application ]
+Security Principles
+The remote access environment adheres to strict security guidelines:
+
+No Public Admin Portals: Administrative services are never exposed directly to the internet.
+Mandatory VPN: Infrastructure management requires an active VPN connection.
+Enforced HTTPS: All public-facing applications use TLS encryption.
+Centralized Auth: Authentication is unified where possible to reduce credential sprawl.
+Least Privilege: Access is granted only to verified, authorized users.
+Isolation: Internal services are segmented from direct internet access.
+Reliability
+The VPN-based design ensures that infrastructure services remain fully accessible regardless of the user's physical location. By tunneling through WireGuard, remote administrators experience the same low-latency, secure workflows as on-site users, simplifying troubleshooting, administration, and ongoing maintenance.
+
+Lessons Learned
+Implementing this secure remote access layer reinforced the critical importance of reducing unnecessary exposure and centralizing authentication. Maintaining a clear separation between public applications and infrastructure management systems is essential for long-term security. The VPN approach strikes an optimal balance between usability and protection, supporting the environment's continued growth.
+
+Future Improvements
+Integrate Multi-Factor Authentication (MFA) for VPN access
+Enhance access auditing and logging capabilities
+Implement centralized VPN monitoring dashboards
+Automate configuration deployment for new clients
+Expand network segmentation within the VPN tunnel
+Refine authentication controls for granular access policies
